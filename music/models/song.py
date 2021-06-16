@@ -6,3 +6,6 @@ class Song(models.Model):
     cover = models.URLField(blank=True)
     source = models.URLField(blank=False, null=False)
     listened = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.title

@@ -11,6 +11,4 @@ router.register('artist', ArtistViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-
-    # path('songs/', SongsAPIView.as_view(), name='songs'),
 ]

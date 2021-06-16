@@ -1,19 +1,30 @@
 from django.db import transaction
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
 from music.models import Song, Album, Artist
 from music.serializers import SongSerializer, AlbumSerializer, ArtistSerializer
-
+from django.contrib.postgres.search import TrigramSimilarity
 
 class SongViewSet(ModelViewSet):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ["listened", "-listened"]
+    search_fields = ['title', 'album__artist__title', 'album__title']
+
+    # def get_queryset(self):
+    #     queryset = Song.objects.all()
+    #     query = self.request.query_params.get('search')
+    #     if query is not None:
+    #         queryset = Song.objects.annotate(
+    #             similarity=TrigramSimilarity('title', query)
+    #         ).filter(similarity__gt=0.4).order_by('-similarity')
+
 
     @action(detail=True, methods=['POST'])
     def listen(self, request, *args, **kwargs):
