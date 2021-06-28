@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from music.models import Song, Album, Artist
 
@@ -17,7 +18,14 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 
 class SongSerializer(serializers.ModelSerializer):
-    album = AlbumSerializer()
+    # album = AlbumSerializer()
     class Meta:
         model = Song
         fields = ('id', 'title', 'album', 'cover', 'source', 'listened')
+
+    def validate_source(self, value):
+
+        if not value.endswith('.mp3'):
+            raise ValidationError(detail='Mp3 file is required')
+
+        return value
